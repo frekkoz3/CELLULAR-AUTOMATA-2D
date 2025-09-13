@@ -8,8 +8,6 @@ class layer:
     def __init__(self, side : int):
         self.side = side
         self.grid = np.zeros(shape=(side, side))
-        self.init_interface()
-        self.initial_condition = self.grid.copy()
 
     def init_interface(self):
         pygame.init()
@@ -66,6 +64,8 @@ class CA_layer(layer):
 
     def __init__(self, side : int, rule : CArule):
         super().__init__(side)
+        self.init_interface()
+        self.initial_condition = self.grid.copy()
         self.rule = rule
         
     def update(self):
@@ -73,6 +73,11 @@ class CA_layer(layer):
     
 class Path_layer(layer):
 
-    def __init__(self, side):
+    def __init__(self, side, eyes : bool = True):
         super().__init__(side)
+        if not eyes:
+            self.init_interface()
+        else:
+            self.grid = np.eye(self.side)
+        self.initial_condition = self.grid.copy()
 

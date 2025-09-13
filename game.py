@@ -11,10 +11,10 @@ class CAGame:
         self.side = side
         self.rule = rule
         self.ca_layer = CA_layer(side, rule)
-        self.path_layer = Path_layer(side)
+        self.path_layer = Path_layer(side, eyes = True)
         self.player_pos = np.array([0, 0], dtype=int)
         self.grid = np.zeros(shape = (side, side))
-        self.reward_pos = np.random.randint(low = 0, high = self.side, size=(2))
+        self.reward_pos = np.array([side-1, side-1], dtype = int)
         self.count = 0
         # WINDOW SETTINGS
         self.window_size = window_size
@@ -27,7 +27,7 @@ class CAGame:
         self.player_color = (255, 0, 0)
         self.reward_color = (0, 255, 0)
         # TECHNICAL SETTINGS
-        self.fps = 30
+        self.fps = 60
     
     def update(self):
         self.ca_layer.update()
@@ -39,6 +39,7 @@ class CAGame:
         self.player_pos = np.array([0, 0])
         self.ca_layer.grid = self.ca_layer.initial_condition.copy()
         self.grid = np.zeros(shape=(self.side, self.side))
+        self.reward_pos = np.array([self.side-1, self.side-1], dtype = int)
         self.count = 0
 
     def check_collision(self):
@@ -92,15 +93,17 @@ class CAGame:
     def play(self):
         
         self.reset()
+
         pygame.init()
         screen = pygame.display.set_mode((self.window_size, self.window_size))
         pygame.display.set_caption("Cellular Automata Game")
 
-        self.fps = 2
-
         clock = pygame.time.Clock()
 
         running = True
+
+        env_update_interval = 500  # ms → 1 update per second
+        last_env_update = 0
 
         while running:
             for event in pygame.event.get():
@@ -118,11 +121,15 @@ class CAGame:
             if self.check_reward():
                 self.update_reward()
                 self.count += 1
-                print(f"You scored. Actual score {self.count}")
+                print(f"You win. Game will restart")
+                self.reset()
 
             if running:
                 
-                self.update()
+                now = pygame.time.get_ticks()
+                if now - last_env_update >= env_update_interval: # It should do it once every second in this way
+                    self.update()
+                    last_env_update = now
                 self.render_grid(screen)
                 self.render_reward(screen)
                 self.render_player(screen)                
@@ -139,6 +146,6 @@ if __name__ == '__main__':
     while True:
         c.play()
         choice = input("Play Again? y/n\n")
-        if choice.lower() != 'y':
+        if choice.lower() == 'n':
             break
     
