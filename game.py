@@ -23,7 +23,7 @@ class CAGame:
         self.light_theme = light_teme
         self.background_color = (0, 0, 0)
         self.line_color = (255, 255, 255)
-        self.cell_color = (255, 255, 255)
+        self.cell_color = (255, 255, 0)
         self.player_color = (255, 0, 0)
         self.reward_color = (0, 255, 0)
         # TECHNICAL SETTINGS
@@ -141,8 +141,8 @@ class CAGame:
         return 0
 
 if __name__ == '__main__':
-    rule = CArule([1, 2, 3], [1, 2, 3], 5, moore_neighbourhood)
-    c = CAGame(50, rule)
+    rule = CArule([4], [1], 2, von_neighbourhood)
+    c = CAGame(50, rule, light_teme=False)
     while True:
         c.play()
         choice = input("Play Again? y/n\n")
