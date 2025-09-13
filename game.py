@@ -6,7 +6,7 @@ from layer import *
 
 class CAGame:
 
-    def __init__(self, side : int, rule : CArule, window_size : int = 600, light_teme : bool = False):
+    def __init__(self, side : int, rule : CArule, light_teme : bool = False):
         
         self.side = side
         self.rule = rule
@@ -16,9 +16,6 @@ class CAGame:
         self.grid = np.zeros(shape = (side, side))
         self.reward_pos = np.array([side-1, side-1], dtype = int)
         self.count = 0
-        # WINDOW SETTINGS
-        self.window_size = window_size
-        self.cell_dimension = self.window_size//side
         # COLOR SETTINGS
         self.light_theme = light_teme
         self.background_color = (0, 0, 0)
@@ -68,8 +65,8 @@ class CAGame:
     def render_grid(self, screen):
         for row in range(self.side):
             for column in range(self.side):
-                x = column * self.cell_dimension
-                y = row * self.cell_dimension
+                x = column * self.cell_dimension[0]
+                y = row * self.cell_dimension[1]
                 k = self.grid[row, column]
                 
                 # light theme
@@ -81,28 +78,39 @@ class CAGame:
                     shade = 255 if k == 1 else 255*(1 - ((self.rule.state + k + 1)/self.rule.state))
                     self.cell_color = (0, 0, 0) if k == 0 else (0, 0, shade)
 
-                pygame.draw.rect(screen, self.cell_color, (x, y, self.cell_dimension, self.cell_dimension)) # questo è per la cella attuale
+                pygame.draw.rect(screen, self.cell_color, (x, y, self.cell_dimension[0], self.cell_dimension[1])) # questo è per la cella attuale
                 #pygame.draw.rect(screen, line_color, (x, y, cell_dimension, cell_dimension), 1) # questo è per i bordi
 
     def render_player(self, screen):
-        pygame.draw.rect(screen, self.player_color, (self.player_pos[1]*self.cell_dimension, self.player_pos[0]*self.cell_dimension, self.cell_dimension, self.cell_dimension))
+        pygame.draw.rect(screen, self.player_color, (self.player_pos[1]*self.cell_dimension[0], self.player_pos[0]*self.cell_dimension[1], self.cell_dimension[0], self.cell_dimension[1]))
 
     def render_reward(self, screen):
-        pygame.draw.rect(screen, self.reward_color, (self.reward_pos[1]*self.cell_dimension, self.reward_pos[0]*self.cell_dimension, self.cell_dimension, self.cell_dimension)) # questo è per la cella attuale
+        pygame.draw.rect(screen, self.reward_color, (self.reward_pos[1]*self.cell_dimension[0], self.reward_pos[0]*self.cell_dimension[1], self.cell_dimension[0], self.cell_dimension[1])) # questo è per la cella attuale
+
+    def render_border(self, screen):
+        pygame.draw.rect(screen, self.line_color,(0, 0, self.game_side, self.game_side),2) 
 
     def play(self):
         
         self.reset()
 
         pygame.init()
-        screen = pygame.display.set_mode((self.window_size, self.window_size))
+        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN) # this is the screen (the big one)
+        info = pygame.display.Info() # retrieving information about the dimension of the screen
+        screen_width = info.current_w # width
+        screen_height = info.current_h # height
+        self.window_size = [screen_height, screen_width]
+        self.game_side = min(screen_height, screen_width) # using the min as game side
+        self.cell_dimension = [self.game_side/self.side, self.game_side/self.side]
+        game_surface = pygame.Surface((self.game_side, self.game_side)) # this is where we put the game
+
         pygame.display.set_caption("Cellular Automata Game")
 
         clock = pygame.time.Clock()
 
         running = True
 
-        env_update_interval = 500  # ms → 1 update per second
+        env_update_interval = 500  # ms → 1 update per second needed for the cellular automata update
         last_env_update = 0
 
         while running:
@@ -130,9 +138,14 @@ class CAGame:
                 if now - last_env_update >= env_update_interval: # It should do it once every second in this way
                     self.update()
                     last_env_update = now
-                self.render_grid(screen)
-                self.render_reward(screen)
-                self.render_player(screen)                
+                self.render_grid(game_surface)
+                self.render_reward(game_surface)
+                self.render_player(game_surface) 
+                self.render_border(game_surface)
+                # in order to center the game    
+                x = (screen_width - self.game_side) // 2
+                y = (screen_height - self.game_side) // 2
+                screen.blit(game_surface, (x, y))
 
                 pygame.display.flip()
 

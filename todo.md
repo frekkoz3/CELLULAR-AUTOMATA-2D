@@ -6,7 +6,7 @@ The points are not sorted by importance for now.
 - [ ] Dark / Light theme
 - [ ] Quick color set up
 - [ ] Rule evaluation
-- [ ] Full screen
+- [x] Full screen
 - [ ] Local vision
 - [ ] Retry button
 - [ ] Setting page 
@@ -14,3 +14,7 @@ The points are not sorted by importance for now.
 - [ ] Level progression
 - [ ] Logging / data saving (local for now)
 - [ ] Readme.md
+- [ ] Add some cool sprites
+- [ ] Add some little music
+- [ ] Think at names for area (eg : Diagonal Alley for the diagonal neighborhood)
+- [ ] Find an easy way to share with my friends
