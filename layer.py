@@ -56,7 +56,7 @@ class layer:
 
     def get(self):
         return self.grid
-
+    
     def update(self):
         pass
 

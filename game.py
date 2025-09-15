@@ -4,9 +4,26 @@ from CA import *
 from neighborhood import *
 from layer import *
 
+light_theme_settings = {
+            'background' : (255, 255, 255),
+            'line' : (0, 0, 0), 
+            'cell' : (255, 55, 205),
+            'player' : (0, 205, 0),
+            'path' : (255, 155, 55),
+            'reward' : (0, 0, 255)
+            }
+dark_theme_settings = {
+            'background' : (0, 0, 0),
+            'line' : (255, 255, 255),
+            'cell' : (0, 0, 255),
+            'player' : (105, 255, 155),
+            'path' : (255, 255, 0),
+            'reward' : (255, 0, 0)
+            }
+
 class CAGame:
 
-    def __init__(self, side : int, rule : CArule, light_teme : bool = False):
+    def __init__(self, side : int, rule : CArule, light_teme : bool = True, colors : dict = light_theme_settings):
         
         self.side = side
         self.rule = rule
@@ -18,11 +35,12 @@ class CAGame:
         self.count = 0
         # COLOR SETTINGS
         self.light_theme = light_teme
-        self.background_color = (0, 0, 0)
-        self.line_color = (255, 255, 255)
-        self.cell_color = (255, 255, 0)
-        self.player_color = (255, 0, 0)
-        self.reward_color = (0, 255, 0)
+        self.background_color = colors['background']
+        self.line_color = colors['line']
+        self.cell_color = colors['cell']
+        self.player_color = colors['player']
+        self.path_color = colors['path']
+        self.reward_color = colors['reward']
         # TECHNICAL SETTINGS
         self.fps = 60
     
@@ -68,17 +86,24 @@ class CAGame:
                 x = column * self.cell_dimension[0]
                 y = row * self.cell_dimension[1]
                 k = self.grid[row, column]
-                
-                # light theme
-                if self.light_theme:
-                    shade = 255 if k == 1 else 255*(((self.rule.state + k + 1)/self.rule.state))
-                    self.cell_color = (255, 255, 255) if k == 0 else (shade, shade, 255)
-                # dark theme
-                else:
-                    shade = 255 if k == 1 else 255*(1 - ((self.rule.state + k + 1)/self.rule.state))
-                    self.cell_color = (0, 0, 0) if k == 0 else (0, 0, shade)
 
-                pygame.draw.rect(screen, self.cell_color, (x, y, self.cell_dimension[0], self.cell_dimension[1])) # questo è per la cella attuale
+                if k != 0:
+                    # light theme
+                    if self.light_theme:
+                        color = self.cell_color
+                        if k > 0:
+                            color = (abs(abs(k)/(self.rule.state+1)*self.cell_color[0] - 255), abs(abs(k)/(self.rule.state+1)*self.cell_color[1] - 255), abs(abs(k)/(self.rule.state+1)*self.cell_color[2] - 255))
+                    # dark theme
+                    else:
+                        color = self.cell_color
+                        if k < 0:
+                            color = (abs(k)/(self.rule.state+1)*self.cell_color[0],abs(k)/(self.rule.state+1)*self.cell_color[1], abs(k)/(self.rule.state+1)*self.cell_color[2])
+                else:
+                    color = self.background_color                    
+
+                # if self.path_layer.get()[(row, column)] == 1: color = self.path_color
+
+                pygame.draw.rect(screen, color, (x, y, self.cell_dimension[0], self.cell_dimension[1])) # questo è per la cella attuale
                 #pygame.draw.rect(screen, line_color, (x, y, cell_dimension, cell_dimension), 1) # questo è per i bordi
 
     def render_player(self, screen):
@@ -154,7 +179,7 @@ class CAGame:
         return 0
 
 if __name__ == '__main__':
-    rule = CArule([4], [1], 2, von_neighbourhood)
+    rule = CArule([4], [1], 5, von_neighbourhood)
     c = CAGame(50, rule, light_teme=False)
     while True:
         c.play()
