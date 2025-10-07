@@ -3,7 +3,7 @@ import numpy as np
 from CA import *
 from neighborhood import *
 from layer import *
-
+# Do not work
 light_theme_settings = {
             'background' : (255, 255, 255),
             'line' : (0, 0, 0), 
@@ -14,16 +14,16 @@ light_theme_settings = {
             }
 dark_theme_settings = {
             'background' : (0, 0, 0),
-            'line' : (255, 255, 255),
             'cell' : (0, 0, 255),
             'player' : (105, 255, 155),
             'path' : (255, 255, 0),
-            'reward' : (255, 0, 0)
+            'reward' : (255, 0, 0), 
+            'line' : (255, 255, 255)
             }
 
 class CAGame:
 
-    def __init__(self, side : int, rule : CArule, light_teme : bool = True, colors : dict = light_theme_settings):
+    def __init__(self, side : int, rule : CArule, light_teme : bool = True, colors : dict = dark_theme_settings):
         
         self.side = side
         self.rule = rule
@@ -104,7 +104,7 @@ class CAGame:
                 # if self.path_layer.get()[(row, column)] == 1: color = self.path_color
 
                 pygame.draw.rect(screen, color, (x, y, self.cell_dimension[0], self.cell_dimension[1])) # questo è per la cella attuale
-                #pygame.draw.rect(screen, line_color, (x, y, cell_dimension, cell_dimension), 1) # questo è per i bordi
+                #pygame.draw.rect(screen, self.line_color, (x, y, self.cell_dimension[0], self.cell_dimension[1]), 1) # questo è per i bordi
 
     def render_player(self, screen):
         pygame.draw.rect(screen, self.player_color, (self.player_pos[1]*self.cell_dimension[0], self.player_pos[0]*self.cell_dimension[1], self.cell_dimension[0], self.cell_dimension[1]))
