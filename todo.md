@@ -13,7 +13,7 @@ The points are not sorted by importance for now.
 - [ ] Starting page
 - [ ] Level progression
 - [ ] Logging / data saving (local for now)
-- [ ] Readme.md
+- [x] Readme.md
 - [ ] Add some cool sprites
 - [ ] Add some little music
 - [ ] Think at names for area (eg : Diagonal Alley for the diagonal neighborhood)
